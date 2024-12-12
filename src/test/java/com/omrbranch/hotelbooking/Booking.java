@@ -15,7 +15,7 @@ public class Booking {
 	Select select;
 	
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 		
 		Booking bb = new Booking();
 		bb.launchBrowser();
@@ -23,6 +23,10 @@ public class Booking {
 		bb.selectHotelBooking();
 		bb.SearchHotels();
 		bb.getHotels();
+		bb.fillDetatils();
+		bb.specialReaquest();
+		bb.payMentMethods();
+		bb.getBookingDetails();
 		
 	}
 	
@@ -69,10 +73,11 @@ public class Booking {
 		List<WebElement> roomOptions = select.getOptions();
 		for (int i = 1; i < roomOptions.size(); i++) {
 			WebElement option = roomOptions.get(i);
-	       if(option.isSelected()) {
+			
+	       if(option.isEnabled()) {
 	    	   System.out.println(option.getText());
 	       }
-			select.selectByIndex(i);
+	       select.selectByIndex(i);
 			
 			
 		}
@@ -131,6 +136,103 @@ public class Booking {
 		
 		WebElement selectedHotelName = driver.findElement(By.xpath("//h2[@class = 'px-3 py-2']"));
 		System.out.println(selectedHotelName.getText());
+		
+	}
+	
+	public void fillDetatils() throws InterruptedException {
+		
+		WebElement selectMy = driver.findElement(By.id("own"));
+		selectMy.click();
+		
+		WebElement chooseTitle = driver.findElement(By.name("title"));
+		select = new Select(chooseTitle);
+		select.selectByIndex(1);
+		
+		WebElement firstNameTxt = driver.findElement(By.id("first_name"));
+		firstNameTxt.sendKeys("Mani");
+		
+		WebElement lastNameTxt = driver.findElement(By.id("last_name"));
+		lastNameTxt.sendKeys("Kandan");
+		
+		WebElement mobileNumTxt = driver.findElement(By.id("user_phone"));
+		mobileNumTxt.sendKeys("9003004000");
+		
+		WebElement emailTxt = driver.findElement(By.id("user_email"));
+		emailTxt.sendKeys("manikandan345@gmail.com");
+		
+		WebElement gst = driver.findElement(By.id("gst"));
+		gst.click();
+		
+		WebElement registerGst = driver.findElement(By.id("gst_registration"));
+		registerGst.sendKeys("9043592058");
+		
+		WebElement gstCompanyName = driver.findElement(By.id("company_name"));
+		gstCompanyName.sendKeys("Greens Tech OMR Branch");
+		
+		WebElement gstCompantAddress = driver.findElement(By.id("company_address"));
+		gstCompantAddress.sendKeys("Thoraipakkam");
+		
+		WebElement clickNxtBtn = driver.findElement(By.id("step1next"));
+		clickNxtBtn.click();
+		
+		
+		
+	}
+	
+	
+	public void specialReaquest() {
+		
+		WebElement largeBed = driver.findElement(By.id("bed"));
+		largeBed.click();
+		
+		WebElement clickToNext = driver.findElement(By.id("step2next"));
+		clickToNext.click();
+		
+	}
+	
+	public void payMentMethods() {
+		WebElement selectPatment = driver.findElement(By.xpath("//div[@class = 'credit-card pm']"));
+		selectPatment.click();
+		
+		WebElement paymentType = driver.findElement(By.id("payment_type"));
+		select = new Select(paymentType);
+		select.selectByIndex(1);
+		
+		WebElement cardType = driver.findElement(By.id("card_type"));
+		select = new Select(cardType);
+		select.selectByIndex(1);
+		
+		WebElement cardNo = driver.findElement(By.id("card_no"));
+		cardNo.sendKeys("5555555555552222");
+		
+		WebElement cardName = driver.findElement(By.id("card_name"));
+		cardName.sendKeys("manikandan");
+		
+		WebElement expiryMonth = driver.findElement(By.id("card_month"));
+		select = new Select(expiryMonth);
+		select.selectByIndex(2);
+		
+		WebElement expiryyear = driver.findElement(By.id("card_year"));
+		select = new Select(expiryyear);
+		select.selectByIndex(5);
+		
+		WebElement cvvTxt = driver.findElement(By.id("cvv"));
+		cvvTxt.sendKeys("333");
+				
+		WebElement subitBtn = driver.findElement(By.id("submitBtn"));
+		subitBtn.click();
+		
+		
+	}
+	
+	public void getBookingDetails() {
+		WebElement getBookingId = driver.findElement(By.xpath("//h2[@class='couppon-code']"));
+		System.out.println(getBookingId.getText().replace("#", ""));
+		
+		WebElement element = driver.findElement(By.xpath("//p[contains(text(),  'Hotel ')]"));
+		WebElement hotelName = element.findElement(By.tagName("strong"));
+		System.out.println(hotelName.getText());
+		
 		
 	}
 	
