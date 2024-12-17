@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.util.List;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -13,6 +14,7 @@ public class Booking {
 	
 	WebDriver driver;
 	Select select;
+	JavascriptExecutor js;
 	
 	
 	public static void main(String[] args) throws InterruptedException {
@@ -27,6 +29,7 @@ public class Booking {
 		bb.specialReaquest();
 		bb.payMentMethods();
 		bb.getBookingDetails();
+		bb.closeWindow();
 		
 	}
 	
@@ -60,44 +63,17 @@ public class Booking {
 	}
 	
 	public void SearchHotels() {
-		WebElement selectState = driver.findElement(By.id("state"));
-		select = new Select(selectState);
-		select.selectByIndex(5);
 		
-		WebElement selectCity = driver.findElement(By.id("city"));
-		select = new Select(selectCity);
-		select.selectByIndex(4);
+		selectDropDown(By.id("state"), "Tamil Nadu");
+		selectDropDown(By.id("city"), "Coimbatore");
+		selectAllOption(By.id("room_type"));
 		
-		WebElement selectRoom = driver.findElement(By.id("room_type"));
-		select = new Select(selectRoom);
-		List<WebElement> roomOptions = select.getOptions();
-		for (int i = 1; i < roomOptions.size(); i++) {
-			WebElement option = roomOptions.get(i);
-			
-	       if(option.isEnabled()) {
-	    	   System.out.println(option.getText());
-	       }
-	       select.selectByIndex(i);
-			
-			
-		}
-		
-		WebElement checkIn = driver.findElement(By.name("check_in"));
-		checkIn.click();
-		selectdate("14");
-		
-		WebElement checkOut = driver.findElement(By.name("check_out"));
-		checkOut.click();
-		
-		selectdate("20");
-		
-		WebElement noOfRooms = driver.findElement(By.id("no_rooms"));
-		select = new Select(noOfRooms);
-		select.selectByIndex(3);
-		
-		WebElement noOfAdults = driver.findElement(By.id("no_adults"));
-		select = new Select(noOfAdults);
-		select.selectByIndex(2);
+		executeJscript(By.name("check_in"), "2024-12-18");
+	
+		executeJscript(By.name("check_out"), "2024-12-20");
+		selectDropDown(By.id("no_rooms"), "1-One");
+	
+		selectDropDown(By.id("no_adults"), "2-Two");
 				
 		WebElement noOdChilds = driver.findElement(By.id("no_child"));
 		noOdChilds.sendKeys("1");
@@ -118,19 +94,16 @@ public class Booking {
 	public void getHotels() {
 		WebElement hotelElements = driver.findElement(By.id("hotellist"));
 		List<WebElement> hoteLTiltes = hotelElements.findElements(By.tagName("h5"));
-		List<WebElement> priceDetails = hotelElements.findElements(By.tagName("h2"));
+		List<WebElement> priceDetails = hotelElements.findElements(By.tagName("strong"));
+		List<WebElement> continebtnElements = hotelElements.findElements(By.xpath("//a[@class='btn filter_btn']"));
 		
-		for (WebElement titles : hoteLTiltes) {
-			System.out.println(titles.getText());
-				
+		for (int i = 0; i < hoteLTiltes.size(); i++) {
+			System.out.println(hoteLTiltes.get(i).getText());
+			System.out.println(priceDetails.get(i).getText());
 		}
 		
-		for (WebElement prices : priceDetails) {
-			System.out.println(prices.getText());
-		}
-		
-		WebElement clickHotel = driver.findElement(By.xpath("(//a[text() = 'Continue'])[3]"));
-		clickHotel.click();
+		WebElement continueBtnClick = continebtnElements.get(2);
+		continueBtnClick.click();
 		
 		driver.switchTo().alert().accept();
 		
@@ -144,9 +117,7 @@ public class Booking {
 		WebElement selectMy = driver.findElement(By.id("own"));
 		selectMy.click();
 		
-		WebElement chooseTitle = driver.findElement(By.name("title"));
-		select = new Select(chooseTitle);
-		select.selectByIndex(1);
+		selectDropDown(By.name("title"), "Mr.");
 		
 		WebElement firstNameTxt = driver.findElement(By.id("first_name"));
 		firstNameTxt.sendKeys("Mani");
@@ -193,28 +164,18 @@ public class Booking {
 	public void payMentMethods() {
 		WebElement selectPatment = driver.findElement(By.xpath("//div[@class = 'credit-card pm']"));
 		selectPatment.click();
-		
-		WebElement paymentType = driver.findElement(By.id("payment_type"));
-		select = new Select(paymentType);
-		select.selectByIndex(1);
-		
-		WebElement cardType = driver.findElement(By.id("card_type"));
-		select = new Select(cardType);
-		select.selectByIndex(1);
+	
+		selectDropDown(By.id("payment_type"), "Debit Card");
+		selectDropDown(By.id("card_type"), "Visa");
 		
 		WebElement cardNo = driver.findElement(By.id("card_no"));
 		cardNo.sendKeys("5555555555552222");
 		
 		WebElement cardName = driver.findElement(By.id("card_name"));
 		cardName.sendKeys("manikandan");
-		
-		WebElement expiryMonth = driver.findElement(By.id("card_month"));
-		select = new Select(expiryMonth);
-		select.selectByIndex(2);
-		
-		WebElement expiryyear = driver.findElement(By.id("card_year"));
-		select = new Select(expiryyear);
-		select.selectByIndex(5);
+	
+		selectDropDown(By.id("card_month"), "April");
+		selectDropDown(By.id("card_year"), "2027");
 		
 		WebElement cvvTxt = driver.findElement(By.id("cvv"));
 		cvvTxt.sendKeys("333");
@@ -236,17 +197,41 @@ public class Booking {
 		
 	}
 	
-	public void selectdate(String date) {
-		WebElement calenderdetails = driver.findElement(By.xpath("//table[@class = 'ui-datepicker-calendar']"));
-		List<WebElement> dateelements = calenderdetails.findElements(By.tagName("td"));
-		for (int i = 0; i < dateelements.size(); i++) {
-			WebElement tableRow = dateelements.get(i);
-			if (tableRow.getText().contains(date)) {
-				tableRow.click();
-				break;
+	public void selectAllOption(By locator) {
+		WebElement element = driver.findElement(locator);
+		select = new Select(element);
+		List<WebElement> options = select.getOptions();
+		for (WebElement selcbytext : options) {
+			
+			if(!selcbytext.isEnabled()) {
+			System.out.println(selcbytext.getText());
+		}
+			else {
+				select.selectByVisibleText(selcbytext.getText());
 			}
 		}
-
+		
 	}
+	
+	public void selectDropDown(By locator, String selectext) {
+		WebElement element = driver.findElement(locator);
+		select = new Select(element);
+		select.selectByVisibleText(selectext);
+	}
+	
+	
+	public void executeJscript(By locator, String data) {
+		WebElement element = driver.findElement(locator);
+		js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].setAttribute('value','"+data+"' )", element);
+	}
+	
+	public void closeWindow() {
+		if (driver != null) {
+			driver.close();
+		}
+	}
+	
+	
 
 }
